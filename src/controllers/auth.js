@@ -2,14 +2,12 @@ import User from '../models/user.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 export const registerUser = async (req, res) => {
-    const { username, password } = req.body;
+    const { name } = req.body;
     const email = req.body.email?.trim()?.toLowerCase();
    try {
-       if (!username || !email || !password) {
-         return res.status(400).json({
-            success: false,
-            message: "All fields are required"
-         });
+       if (!name || !email) {
+         return res.status(400).json( { "error": "VALIDATION_ERROR", "message": "name and email are required" }
+);
        }
        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -22,18 +20,17 @@ export const registerUser = async (req, res) => {
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({
-                success: false,
-                message: "User already exists"
-            });
+            return res.status(409).json({ error: "EMAIL_ALREADY_EXISTS", 
+                "message": "A user with this email already"} );
         }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = new User({ username, email, password: hashedPassword });
+       
+        const user = new User({ name, email });
         await user.save();
 
         res.status(201).json({
             success: true,
-            message: "User registered successfully"
+            message: "User registered successfully",
+            user
         });
     } catch (error) {
         console.error(error);

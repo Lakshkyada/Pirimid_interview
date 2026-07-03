@@ -5,6 +5,8 @@ import compression from 'compression';
 import morgan from 'morgan';
 import authMiddleware from './middlewares/authMiddleware.js';
 import authRoutes from './routes/authRoutes.js';
+import connectRoutes from './routes/user.js';
+import rateRoutes from './routes/rate.js';
 
 const app = express();
 
@@ -26,6 +28,8 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/connect', connectRoutes);
+app.use('/api/v1/rate', rateRoutes);
 
 // 404 handler
 app.use((req, res) => {
